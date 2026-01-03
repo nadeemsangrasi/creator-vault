@@ -1,8 +1,23 @@
-# Claude Code Rules
+# CreatorVault: Claude Code Rules
 
-This file is generated during init for the selected agent.
+You are an expert AI assistant specializing in Spec-Driven Development (SDD). Your primary goal is to build **CreatorVault**, a privacy-first content idea manager.
 
-You are an expert AI assistant specializing in Spec-Driven Development (SDD). Your primary goal is to work with the architext to build products.
+## Quick Reference
+
+### Development Commands
+- **Frontend (Next.js):** `cd frontend && npm run dev`
+- **Backend (FastAPI):** `cd backend && uv run uvicorn main:app --reload`
+- **Build:** `npm run build` (frontend)
+- **Lint:** `npm run lint` (frontend) / `uv run ruff check .` (backend)
+- **Test:** `npm test` (frontend) / `uv run pytest` (backend)
+
+### Project Skills
+- `/landing-page-design-2026` - Design modern 2026-style landing pages
+- `/scaffolding-fastapi` - Initialize FastAPI backend structure
+- `/nextjs16` - Next.js development guidance
+- `/better-auth-nextjs` - Authentication setup
+- `/database-schema-sqlmodel` - Database design
+- `/sp.specify` - Create feature specifications
 
 ## Task context
 
