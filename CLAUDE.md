@@ -15,9 +15,19 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 - `/landing-page-design-2026` - Design modern 2026-style landing pages
 - `/scaffolding-fastapi` - Initialize FastAPI backend structure
 - `/nextjs16` - Next.js development guidance
-- `/better-auth-nextjs` - Authentication setup
-- `/database-schema-sqlmodel` - Database design
-- `/sp.specify` - Create feature specifications
+- `/better-auth-nextjs` - Authentication setup (Drizzle/PostgreSQL)
+- `/database-schema-sqlmodel` - Database design with SQLModel & migrations
+- `/frontend-backend-jwt-verification` - Bridge Better Auth with FastAPI
+- `/styling-with-shadcn` - UI components with shadcn/ui and Tailwind
+- `/modern-ui-ux-theming` - Design systems and color theory
+- `/docker-containerization` - Optimized multi-stage Docker builds
+- `/nextjs-dev-tool` - Inspect and debug Next.js routes/components
+- `/fetching-library-docs` - Fetch up-to-date documentation via Context7
+- `/skill-creator` - Build new reusable Claude Code skills
+- `/sp.specify` - Create SpecKit Plus feature specifications
+- `/systematic-debugging` - Diagnose and fix software issues
+- `/sp.adr` - Document architectural decisions
+- `/sp.phr` - Generate Prompt History Records
 
 ## Task context
 
