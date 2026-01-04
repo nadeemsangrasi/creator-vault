@@ -7,7 +7,26 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Create and Retrieve Content Ideas (Priority: P1)
+### User Story 1 - JWT Authentication Middleware (Priority: P1)
+
+The system must verify JWT tokens from the frontend before allowing access to any protected endpoint, extracting user identity and ensuring secure request authorization.
+
+**Why this priority**: Authentication is the foundation of the entire API. Without proper JWT verification, there is no security, no user isolation, and no way to associate ideas with owners. This must work before any other feature can function securely.
+
+**Independent Test**: Can be fully tested by sending requests with valid JWT tokens (system allows access), invalid tokens (system rejects with 401), expired tokens (system rejects with 401), and no token (system rejects with 401). Delivers value by ensuring all subsequent features operate in a secure, authenticated context.
+
+**Acceptance Scenarios**:
+
+1. **Given** the frontend sends a request with a valid JWT token in Authorization header, **When** the middleware processes the request, **Then** the system decodes the token using the shared public key, extracts the user ID from the "sub" claim, and allows the request to proceed
+2. **Given** a request contains an expired JWT token, **When** the middleware verifies the token, **Then** the system rejects the request with 401 Unauthorized and error message "Token expired"
+3. **Given** a request contains a JWT token with an invalid signature, **When** the middleware attempts to verify it, **Then** the system rejects the request with 401 Unauthorized and error message "Invalid token signature"
+4. **Given** a request to a protected endpoint has no Authorization header, **When** the middleware checks for authentication, **Then** the system rejects the request with 401 Unauthorized and error message "Missing authentication token"
+5. **Given** a request to health check endpoints (/health, /docs), **When** the middleware evaluates the request, **Then** the system bypasses authentication and allows public access
+6. **Given** a valid JWT token contains user_id "user_123", **When** the middleware extracts user identity, **Then** the system injects "user_123" into the request context for use by downstream handlers
+
+---
+
+### User Story 2 - Create and Retrieve Content Ideas (Priority: P1)
 
 A content creator wants to capture new content ideas and view them later for planning purposes.
 
@@ -24,7 +43,7 @@ A content creator wants to capture new content ideas and view them later for pla
 
 ---
 
-### User Story 2 - Update Content Idea Details and Stage (Priority: P1)
+### User Story 3 - Update Content Idea Details and Stage (Priority: P1)
 
 A content creator wants to edit idea details as they evolve and track progress through content stages (idea → outline → draft → published).
 
@@ -42,7 +61,7 @@ A content creator wants to edit idea details as they evolve and track progress t
 
 ---
 
-### User Story 3 - Delete Unwanted Ideas (Priority: P1)
+### User Story 4 - Delete Unwanted Ideas (Priority: P1)
 
 A content creator wants to remove ideas that are no longer relevant or were captured by mistake.
 
@@ -59,7 +78,7 @@ A content creator wants to remove ideas that are no longer relevant or were capt
 
 ---
 
-### User Story 4 - Organize Ideas with Tags and Priorities (Priority: P2)
+### User Story 5 - Organize Ideas with Tags and Priorities (Priority: P2)
 
 A content creator wants to categorize ideas by content type (blog, video, podcast) and importance (high, medium, low) for better organization.
 
@@ -76,7 +95,7 @@ A content creator wants to categorize ideas by content type (blog, video, podcas
 
 ---
 
-### User Story 5 - Search and Filter Ideas (Priority: P2)
+### User Story 6 - Search and Filter Ideas (Priority: P2)
 
 A content creator wants to find specific ideas using keyword search and filter by stage, tags, or priority.
 
@@ -94,7 +113,7 @@ A content creator wants to find specific ideas using keyword search and filter b
 
 ---
 
-### User Story 6 - Set Due Dates for Content Deadlines (Priority: P3)
+### User Story 7 - Set Due Dates for Content Deadlines (Priority: P3)
 
 A content creator wants to assign due dates to ideas to track content publishing deadlines and upcoming commitments.
 
@@ -111,7 +130,7 @@ A content creator wants to assign due dates to ideas to track content publishing
 
 ---
 
-### User Story 7 - Sort Ideas by Different Criteria (Priority: P3)
+### User Story 8 - Sort Ideas by Different Criteria (Priority: P3)
 
 A content creator wants to sort their ideas by creation date, priority, stage, or title to view them in different meaningful orders.
 
@@ -128,40 +147,86 @@ A content creator wants to sort their ideas by creation date, priority, stage, o
 
 ---
 
+### User Story 9 - Docker Containerization for Deployment (Priority: P1)
+
+The backend API must be containerized using Docker with optimized multi-stage builds for consistent deployment across development, staging, and production environments.
+
+**Why this priority**: Containerization is essential for Phase 2 completion (Quality Gate #5) and enables consistent deployment to cloud platforms. Docker ensures environment parity, simplifies dependency management, and prepares the foundation for Phase 4 Kubernetes orchestration.
+
+**Independent Test**: Can be fully tested by building the Docker image, running it with environment variables, and verifying the API responds to health checks. Delivers value by enabling one-command deployment to any Docker-compatible platform (Railway, Render, DigitalOcean App Platform).
+
+**Acceptance Scenarios**:
+
+1. **Given** the backend codebase is complete, **When** the Docker build command is executed, **Then** the system creates an optimized multi-stage image with minimal size (under 500MB) containing all runtime dependencies
+2. **Given** a Docker image is built, **When** the container starts with required environment variables (DATABASE_URL, JWT_PUBLIC_KEY, ALLOWED_ORIGINS), **Then** the API runs database migrations automatically and starts listening on the configured port
+3. **Given** the Docker container is running, **When** a health check request is sent to /health, **Then** the system responds with 200 OK indicating the API is operational
+4. **Given** the Docker container is running, **When** the database connection is verified, **Then** the /health/db endpoint returns success confirming database connectivity
+5. **Given** docker-compose.yml is configured, **When** docker-compose up is executed, **Then** the system starts both the API container and PostgreSQL database container with proper networking
+6. **Given** the Docker container receives a SIGTERM signal, **When** the shutdown process begins, **Then** the system gracefully closes database connections and completes in-flight requests before terminating
+7. **Given** environment variables are missing, **When** the container starts, **Then** the system fails fast with a clear error message listing required configuration
+
+---
+
 ### Edge Cases
 
+**JWT Authentication:**
+- What happens when JWT token expires mid-session? System returns 401 authentication error requiring re-login.
+- What happens when JWT token has valid signature but missing "sub" claim? System rejects with 401 error "Invalid token: missing user identifier".
+- What happens when JWT token issuer doesn't match expected issuer? System rejects with 401 error "Invalid token: untrusted issuer".
+- What happens when multiple requests are made with the same valid token? System verifies token on each request and allows all authenticated requests.
+
+**CRUD Operations:**
 - What happens when a user tries to create an idea with a title exceeding 200 characters? System rejects with validation error specifying max length.
 - What happens when a user tries to retrieve ideas but has none saved? System returns empty array with success status.
-- What happens when pagination offset exceeds total idea count? System returns empty array with pagination metadata showing no results.
 - What happens when a user submits an empty title? System rejects with validation error requiring title.
 - What happens when a user updates an idea but provides no changes? System returns success with unchanged idea.
 - What happens when concurrent requests attempt to update the same idea? Last write wins, modification timestamp reflects the final update.
 - What happens when a user tries to filter by both stage="idea" and stage="draft"? System interprets as OR logic and returns ideas matching either stage.
-- What happens when database connection fails during idea creation? System returns service unavailable error with retry guidance.
-- What happens when JWT token expires mid-session? System returns authentication error requiring re-login.
+- What happens when pagination offset exceeds total idea count? System returns empty array with pagination metadata showing no results.
 - What happens when a user provides invalid date format for due_date? System rejects with validation error specifying expected format.
+
+**Infrastructure:**
+- What happens when database connection fails during idea creation? System returns 503 service unavailable error with retry guidance.
+- What happens when database connection pool is exhausted? System queues requests with timeout, returns 503 if timeout exceeded.
+- What happens when Docker container runs out of memory? System logs error, container restarts automatically via orchestration platform.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
+#### JWT Authentication & Authorization (Middleware)
+
+- **FR-001**: System MUST implement middleware that intercepts all API requests before routing to handlers
+- **FR-002**: System MUST extract JWT token from Authorization header using "Bearer <token>" format
+- **FR-003**: System MUST verify JWT token signature using RS256 algorithm with configured public key
+- **FR-004**: System MUST validate JWT token expiration timestamp and reject expired tokens
+- **FR-005**: System MUST validate JWT token issuer matches expected issuer configuration
+- **FR-006**: System MUST validate JWT token audience matches expected audience configuration
+- **FR-007**: System MUST extract user identifier from JWT token "sub" claim
+- **FR-008**: System MUST inject authenticated user identifier into request context for downstream handlers
+- **FR-022**: System MUST reject requests with missing Authorization header (except public endpoints)
+- **FR-023**: System MUST reject requests with malformed JWT tokens
+- **FR-024**: System MUST bypass authentication for public endpoints: /health, /health/db, /health/ready, /docs, /redoc, /openapi.json
+- **FR-025**: System MUST return 401 Unauthorized with descriptive error message for authentication failures
+- **FR-013**: System MUST log all authentication failures with correlation ID for security auditing
+
 #### Core CRUD Operations
 
-- **FR-001**: System MUST allow authenticated users to create content ideas with required title (max 200 characters) and optional notes (max 5000 characters)
-- **FR-002**: System MUST assign each created idea a unique identifier that persists across sessions
-- **FR-003**: System MUST automatically record creation timestamp and last modification timestamp for each idea
-- **FR-004**: System MUST allow users to retrieve a specific idea by its unique identifier
-- **FR-005**: System MUST allow users to retrieve all their ideas in a paginated list
-- **FR-006**: System MUST allow users to update idea title, notes, stage, tags, priority, and due date
-- **FR-007**: System MUST allow users to permanently delete ideas they own
-- **FR-008**: System MUST update modification timestamp whenever an idea is changed
+- **FR-014**: System MUST allow authenticated users to create content ideas with required title (max 200 characters) and optional notes (max 5000 characters)
+- **FR-015**: System MUST assign each created idea a unique identifier that persists across sessions
+- **FR-016**: System MUST automatically record creation timestamp and last modification timestamp for each idea
+- **FR-017**: System MUST allow users to retrieve a specific idea by its unique identifier
+- **FR-018**: System MUST allow users to retrieve all their ideas in a paginated list
+- **FR-019**: System MUST allow users to update idea title, notes, stage, tags, priority, and due date
+- **FR-020**: System MUST allow users to permanently delete ideas they own
+- **FR-021**: System MUST update modification timestamp whenever an idea is changed
 
 #### Stage Management
 
-- **FR-009**: System MUST support exactly four content stages: "idea", "outline", "draft", "published"
-- **FR-010**: System MUST default new ideas to "idea" stage unless explicitly specified
-- **FR-011**: System MUST validate stage values and reject invalid stages with clear error messages
-- **FR-012**: System MUST allow users to advance or change idea stage at any time
+- **FR-022**: System MUST support exactly four content stages: "idea", "outline", "draft", "published"
+- **FR-023**: System MUST default new ideas to "idea" stage unless explicitly specified
+- **FR-024**: System MUST validate stage values and reject invalid stages with clear error messages
+- **FR-025**: System MUST allow users to advance or change idea stage at any time
 
 #### Tagging and Organization
 
@@ -240,6 +305,21 @@ A content creator wants to sort their ideas by creation date, priority, stage, o
 - **FR-058**: System MUST provide database health check endpoint that verifies database connectivity
 - **FR-059**: System MUST provide readiness probe endpoint for deployment orchestration
 - **FR-060**: System MUST log all API requests with correlation IDs for tracing
+
+#### Docker Containerization
+
+- **FR-061**: System MUST provide Dockerfile with multi-stage build optimizing image size
+- **FR-062**: System MUST include all runtime dependencies in Docker image (Python, uv, system libraries)
+- **FR-063**: System MUST run database migrations automatically on container startup before starting API server
+- **FR-064**: System MUST validate required environment variables on startup and fail fast with clear errors if missing
+- **FR-065**: System MUST expose configurable port via environment variable (default 8000)
+- **FR-066**: System MUST handle SIGTERM signal gracefully by closing database connections and completing in-flight requests
+- **FR-067**: System MUST provide docker-compose.yml for local development with API and PostgreSQL services
+- **FR-068**: System MUST configure health check endpoints in Docker for container orchestration
+- **FR-069**: System MUST log to stdout/stderr for container log aggregation
+- **FR-070**: System MUST use non-root user in Docker container for security
+- **FR-071**: System MUST keep Docker image size under 500MB for efficient deployment
+- **FR-072**: System MUST support environment-based configuration (dev, staging, prod) via environment variables
 
 ### Key Entities
 
