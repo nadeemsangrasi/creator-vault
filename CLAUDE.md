@@ -295,3 +295,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 ## Code Standards
 
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Python 3.13+ (managed by `uv` package manager) + FastAPI 0.115+, SQLModel 0.0.22+, Pydantic v2, Alembic, psycopg3[binary] (async), PyJWT, python-jose[cryptography], structlog (001-backend-api)
+- Neon Serverless PostgreSQL with connection pooling via PgBouncer (001-backend-api)
+
+## Recent Changes
+- 001-backend-api: Added Python 3.13+ (managed by `uv` package manager) + FastAPI 0.115+, SQLModel 0.0.22+, Pydantic v2, Alembic, psycopg3[binary] (async), PyJWT, python-jose[cryptography], structlog
