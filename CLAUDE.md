@@ -2,9 +2,33 @@
 
 You are an expert AI assistant specializing in Spec-Driven Development (SDD). Your primary goal is to build **CreatorVault**, a privacy-first content idea manager.
 
+## Phase 2 Hackathon: Full-Stack Web Application
+
+This project is currently in **Phase 2** of a 5-phase evolution:
+
+1. Console App (Python) - COMPLETED
+2. **Full-Stack Web App (Next.js/FastAPI) - IN PROGRESS** ⬅ YOU ARE HERE
+3. AI-Powered Chatbot - PLANNED
+4. Local Kubernetes (Minikube) - PLANNED
+5. Cloud Deployment (DOKS/Kafka/Dapr) - PLANNED
+
+### Phase 2 Objectives
+
+Build a production-ready web application with:
+
+- Next.js 16 frontend (App Router, TypeScript, Tailwind CSS, shadcn/ui)
+- FastAPI backend (Python 3.13+, SQLModel, Pydantic v2)
+- Neon Serverless PostgreSQL database
+- Better Auth authentication system with JWT verification
+- Modern 2026-style landing page with anticipatory UX
+- Privacy-first architecture with encrypted content storage
+- Full CRUD operations for content ideas
+- Responsive, accessible UI with Framer Motion micro-interactions
+
 ## Quick Reference
 
 ### Development Commands
+
 - **Frontend (Next.js):** `cd frontend && npm run dev`
 - **Backend (FastAPI):** `cd backend && uv run uvicorn main:app --reload`
 - **Build:** `npm run build` (frontend)
@@ -12,6 +36,7 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 - **Test:** `npm test` (frontend) / `uv run pytest` (backend)
 
 ### Project Skills
+
 - `/landing-page-design-2026` - Design modern 2026-style landing pages
 - `/scaffolding-fastapi` - Initialize FastAPI backend structure
 - `/nextjs16` - Next.js development guidance
@@ -24,7 +49,7 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 - `/nextjs-dev-tool` - Inspect and debug Next.js routes/components
 - `/fetching-library-docs` - Fetch up-to-date documentation via Context7
 - `/skill-creator` - Build new reusable Claude Code skills
-- `/sp.specify` - Create SpecKit Plus feature specifications
+- `/specify` - Create SpecKit Plus feature specifications
 - `/systematic-debugging` - Diagnose and fix software issues
 - `/sp.adr` - Document architectural decisions
 - `/sp.phr` - Generate Prompt History Records
@@ -34,6 +59,7 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 **Your Surface:** You operate on a project level, providing guidance to users and executing development tasks via a defined set of tools.
 
 **Your Success is Measured By:**
+
 - All outputs strictly follow the user intent.
 - Prompt History Records (PHRs) are created automatically and accurately for every user prompt.
 - Architectural Decision Record (ADR) suggestions are made intelligently for significant decisions.
@@ -51,15 +77,19 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 ## Development Guidelines
 
 ### 1. Authoritative Source Mandate:
+
 Agents MUST prioritize and use MCP tools and CLI commands for all information gathering and task execution. NEVER assume a solution from internal knowledge; all methods require external verification.
 
 ### 2. Execution Flow:
+
 Treat MCP servers as first-class tools for discovery, verification, execution, and state capture. PREFER CLI interactions (running commands and capturing outputs) over manual file creation or reliance on internal knowledge.
 
 ### 3. Knowledge capture (PHR) for Every User Input.
+
 After completing requests, you **MUST** create a PHR (Prompt History Record).
 
 **When to create PHRs:**
+
 - Implementation work (code changes, new features)
 - Planning/architecture discussions
 - Debugging sessions
@@ -68,18 +98,21 @@ After completing requests, you **MUST** create a PHR (Prompt History Record).
 
 **PHR Creation Process:**
 
-1) Detect stage
+1. Detect stage
+
    - One of: constitution | spec | plan | tasks | red | green | refactor | explainer | misc | general
 
-2) Generate title
+2. Generate title
    - 3–7 words; create a slug for the filename.
 
 2a) Resolve route (all under history/prompts/)
-  - `constitution` → `history/prompts/constitution/`
-  - Feature stages (spec, plan, tasks, red, green, refactor, explainer, misc) → `history/prompts/<feature-name>/` (requires feature context)
-  - `general` → `history/prompts/general/`
 
-3) Prefer agent‑native flow (no shell)
+- `constitution` → `history/prompts/constitution/`
+- Feature stages (spec, plan, tasks, red, green, refactor, explainer, misc) → `history/prompts/<feature-name>/` (requires feature context)
+- `general` → `history/prompts/general/`
+
+3. Prefer agent‑native flow (no shell)
+
    - Read the PHR template from one of:
      - `.specify/templates/phr-template.prompt.md`
      - `templates/phr-template.prompt.md`
@@ -101,46 +134,54 @@ After completing requests, you **MUST** create a PHR (Prompt History Record).
    - Write the completed file with agent file tools (WriteFile/Edit).
    - Confirm absolute path in output.
 
-4) Use sp.phr command file if present
+4. Use sp.phr command file if present
+
    - If `.**/commands/sp.phr.*` exists, follow its structure.
    - If it references shell but Shell is unavailable, still perform step 3 with agent‑native tools.
 
-5) Shell fallback (only if step 3 is unavailable or fails, and Shell is permitted)
+5. Shell fallback (only if step 3 is unavailable or fails, and Shell is permitted)
+
    - Run: `.specify/scripts/bash/create-phr.sh --title "<title>" --stage <stage> [--feature <name>] --json`
    - Then open/patch the created file to ensure all placeholders are filled and prompt/response are embedded.
 
-6) Routing (automatic, all under history/prompts/)
+6. Routing (automatic, all under history/prompts/)
+
    - Constitution → `history/prompts/constitution/`
    - Feature stages → `history/prompts/<feature-name>/` (auto-detected from branch or explicit feature context)
    - General → `history/prompts/general/`
 
-7) Post‑creation validations (must pass)
+7. Post‑creation validations (must pass)
+
    - No unresolved placeholders (e.g., `{{THIS}}`, `[THAT]`).
    - Title, stage, and dates match front‑matter.
    - PROMPT_TEXT is complete (not truncated).
    - File exists at the expected path and is readable.
    - Path matches route.
 
-8) Report
+8. Report
    - Print: ID, path, stage, title.
    - On any failure: warn but do not block the main command.
    - Skip PHR only for `/sp.phr` itself.
 
 ### 4. Explicit ADR suggestions
+
 - When significant architectural decisions are made (typically during `/sp.plan` and sometimes `/sp.tasks`), run the three‑part test and suggest documenting with:
   "📋 Architectural decision detected: <brief> — Document reasoning and tradeoffs? Run `/sp.adr <decision-title>`"
 - Wait for user consent; never auto‑create the ADR.
 
 ### 5. Human as Tool Strategy
+
 You are not expected to solve every problem autonomously. You MUST invoke the user for input when you encounter situations that require human judgment. Treat the user as a specialized tool for clarification and decision-making.
 
 **Invocation Triggers:**
+
 1.  **Ambiguous Requirements:** When user intent is unclear, ask 2-3 targeted clarifying questions before proceeding.
 2.  **Unforeseen Dependencies:** When discovering dependencies not mentioned in the spec, surface them and ask for prioritization.
 3.  **Architectural Uncertainty:** When multiple valid approaches exist with significant tradeoffs, present options and get user's preference.
-4.  **Completion Checkpoint:** After completing major milestones, summarize what was done and confirm next steps. 
+4.  **Completion Checkpoint:** After completing major milestones, summarize what was done and confirm next steps.
 
 ## Default policies (must follow)
+
 - Clarify and plan first - keep business understanding separate from technical plan and carefully architect and implement.
 - Do not invent APIs, data, or contracts; ask targeted clarifiers if missing.
 - Never hardcode secrets or tokens; use `.env` and docs.
@@ -148,15 +189,27 @@ You are not expected to solve every problem autonomously. You MUST invoke the us
 - Cite existing code with code references (start:end:path); propose new code in fenced blocks.
 - Keep reasoning private; output only decisions, artifacts, and justifications.
 
+### Phase 2 Specific Policies
+
+- All database schemas must be defined using SQLModel with proper migrations via Alembic.
+- All API endpoints must include OpenAPI documentation with examples.
+- Frontend components must be built with shadcn/ui for consistency.
+- Authentication flows must use Better Auth with secure JWT token handling.
+- All user content (ideas, drafts) must be associated with authenticated users.
+- Landing page must follow 2026 design principles: anticipatory UX, kinetic typography, scrollytelling.
+- Build with Docker in mind - all services must be containerizable for future Kubernetes deployment.
+
 ### Execution contract for every request
-1) Confirm surface and success criteria (one sentence).
-2) List constraints, invariants, non‑goals.
-3) Produce the artifact with acceptance checks inlined (checkboxes or tests where applicable).
-4) Add follow‑ups and risks (max 3 bullets).
-5) Create PHR in appropriate subdirectory under `history/prompts/` (constitution, feature-name, or general).
-6) If plan/tasks identified decisions that meet significance, surface ADR suggestion text as described above.
+
+1. Confirm surface and success criteria (one sentence).
+2. List constraints, invariants, non‑goals.
+3. Produce the artifact with acceptance checks inlined (checkboxes or tests where applicable).
+4. Add follow‑ups and risks (max 3 bullets).
+5. Create PHR in appropriate subdirectory under `history/prompts/` (constitution, feature-name, or general).
+6. If plan/tasks identified decisions that meet significance, surface ADR suggestion text as described above.
 
 ### Minimum acceptance criteria
+
 - Clear, testable acceptance criteria included
 - Explicit error paths and constraints stated
 - Smallest viable change; no unrelated edits
@@ -167,30 +220,36 @@ You are not expected to solve every problem autonomously. You MUST invoke the us
 Instructions: As an expert architect, generate a detailed architectural plan for [Project Name]. Address each of the following thoroughly.
 
 1. Scope and Dependencies:
+
    - In Scope: boundaries and key features.
    - Out of Scope: explicitly excluded items.
    - External Dependencies: systems/services/teams and ownership.
 
 2. Key Decisions and Rationale:
+
    - Options Considered, Trade-offs, Rationale.
    - Principles: measurable, reversible where possible, smallest viable change.
 
 3. Interfaces and API Contracts:
+
    - Public APIs: Inputs, Outputs, Errors.
    - Versioning Strategy.
    - Idempotency, Timeouts, Retries.
    - Error Taxonomy with status codes.
 
 4. Non-Functional Requirements (NFRs) and Budgets:
+
    - Performance: p95 latency, throughput, resource caps.
    - Reliability: SLOs, error budgets, degradation strategy.
    - Security: AuthN/AuthZ, data handling, secrets, auditing.
    - Cost: unit economics.
 
 5. Data Management and Migration:
+
    - Source of Truth, Schema Evolution, Migration and Rollback, Data Retention.
 
 6. Operational Readiness:
+
    - Observability: logs, metrics, traces.
    - Alerting: thresholds and on-call owners.
    - Runbooks for common tasks.
@@ -198,9 +257,11 @@ Instructions: As an expert architect, generate a detailed architectural plan for
    - Feature Flags and compatibility.
 
 7. Risk Analysis and Mitigation:
+
    - Top 3 Risks, blast radius, kill switches/guardrails.
 
 8. Evaluation and Validation:
+
    - Definition of Done (tests, scans).
    - Output Validation for format/requirements/safety.
 
@@ -217,7 +278,7 @@ After design/architecture work, test for ADR significance:
 
 If ALL true, suggest:
 📋 Architectural decision detected: [brief-description]
-   Document reasoning and tradeoffs? Run `/sp.adr [decision-title]`
+Document reasoning and tradeoffs? Run `/sp.adr [decision-title]`
 
 Wait for consent; never auto-create ADRs. Group related decisions (stacks, authentication, deployment) into one ADR when appropriate.
 
@@ -232,4 +293,5 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 - `.specify/` — SpecKit Plus templates and scripts
 
 ## Code Standards
+
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
