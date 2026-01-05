@@ -137,9 +137,21 @@ open http://localhost:8000/docs
 
 ### Run Locally
 
+**Option 1: Using Local PostgreSQL**
+
 ```bash
-# Start PostgreSQL
-docker-compose up postgres -d
+# Start PostgreSQL (if not running)
+sudo service postgresql start
+# OR with Docker (recommended for dev)
+docker run -d --name creatorvault-postgres \
+  -e POSTGRES_USER=creatorvault \
+  -e POSTGRES_PASSWORD=your_password \
+  -e POSTGRES_DB=creatorvault \
+  -p 5432:5432 \
+  postgres:16-alpine
+
+# Create database (if needed)
+docker exec -it creatorvault-postgres psql -U creatorvault -d creatorvault -c "CREATE DATABASE creatorvault;"
 
 # Run migrations
 uv run alembic upgrade head
@@ -149,6 +161,49 @@ uv run uvicorn main:app --reload
 
 # Access API
 open http://localhost:8000/docs
+```
+
+**Option 2: Using Docker Compose (Recommended)**
+
+```bash
+# Start PostgreSQL + Backend
+docker-compose up --build
+
+# Access API
+open http://localhost:8000/docs
+```
+
+**Option 3: Development with Auto-reload**
+
+```bash
+cd backend
+
+# Start in development mode (auto-reloads on code changes)
+uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# With more verbose logging
+uv run uvicorn main:app --reload --log-level debug
+```
+
+### Database Setup (Local Development)
+
+If running PostgreSQL locally (not in Docker):
+
+```bash
+# Create database
+createdb creatorvault
+
+# Create user (if needed)
+createuser creatorvault -P
+
+# Grant privileges
+psql -d creatorvault -c "GRANT ALL PRIVILEGES ON DATABASE creatorvault TO creatorvault;"
+
+# Test connection
+psql -U creatorvault -d creatorvault
+
+# Set DATABASE_URL in .env
+echo 'DATABASE_URL=postgresql+psycopg://creatorvault:your_password@localhost:5432/creatorvault' >> .env
 ```
 
 ---
@@ -519,9 +574,119 @@ X-Correlation-ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
 
 ---
 
-## 🚨 Troubleshooting
+## 🔧 Local Development Issues
 
-### Database Connection Issues
+### Connection Refused (localhost:8000)
+
+**Problem:** API won't start, connection refused error
+
+**Solutions:**
+```bash
+# Check if port 8000 is in use
+lsof -i :8000
+
+# Kill process using port 8000
+kill -9 $(lsof -t -i:8000)
+
+# Use different port
+uv run uvicorn main:app --port 8001
+```
+
+### PostgreSQL Connection Failed
+
+**Problem:** "could not connect to server: Connection refused"
+
+**Solutions:**
+```bash
+# Check PostgreSQL is running
+ps aux | grep postgres
+# OR
+sudo service postgresql status
+
+# Verify credentials in .env
+cat .env | grep DATABASE_URL
+
+# Test direct connection
+psql -U creatorvault -d creatorvault -h localhost
+```
+
+### Module Import Errors
+
+**Problem:** "ModuleNotFoundError: No module named 'src'"
+
+**Solutions:**
+```bash
+# Add backend to PYTHONPATH
+export PYTHONPATH="${PYTHONPATH}:$(pwd)/backend"
+
+# OR run from backend directory
+cd backend
+python -m src.core.config
+
+# OR use uv run with proper pathing
+uv run uvicorn main:app
+```
+
+### Alembic Migration Failed
+
+**Problem:** "Target database is not up to date" or "No such table"
+
+**Solutions:**
+```bash
+# Check current migration status
+uv run alembic current
+
+# View migration history
+uv run alembic history
+
+# Reset database (DEV ONLY)
+uv run alembic downgrade base
+uv run alembic upgrade head
+
+# Drop and recreate tables (DEV ONLY)
+psql -U creatorvault -d creatorvault -c "DROP TABLE IF EXISTS ideas CASCADE;"
+uv run alembic upgrade head
+```
+
+### Environment Variables Not Loaded
+
+**Problem:** "ValidationError: missing required field"
+
+**Solutions:**
+```bash
+# Verify .env file exists
+ls -la .env
+
+# Check file permissions
+chmod 600 .env
+
+# Verify variables are set
+cat .env
+
+# Reload environment
+source .env
+export $(cat .env | xargs)
+```
+
+### Import Path Issues
+
+**Problem:** "ImportError: cannot import from 'src.core'"
+
+**Solutions:**
+```bash
+# Ensure __init__.py files exist in all directories
+find src -type d -exec touch {}/__init__.py \;
+
+# Check Python can find modules
+python -c "from src.core.config import get_settings; print('OK')"
+
+# Reinstall dependencies if needed
+uv sync
+```
+
+---
+
+## 🚨 Troubleshooting
 
 ```bash
 # Check PostgreSQL is running
