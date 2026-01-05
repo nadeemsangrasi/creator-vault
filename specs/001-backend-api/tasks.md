@@ -25,11 +25,11 @@ This is a web application backend using the structure defined in plan.md:
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create backend directory structure per plan.md (backend/src/{api,core,models,repositories,services,schemas,middleware}, backend/alembic/, backend/tests/{unit,integration}/)
-- [ ] T002 Initialize Python project with uv in backend/ directory (uv init, create pyproject.toml with FastAPI 0.115+, SQLModel 0.0.22+, Pydantic v2 dependencies)
-- [ ] T003 [P] Create .env.example file in backend/ with required environment variables (DATABASE_URL, JWT_PUBLIC_KEY, JWT_ALGORITHM, JWT_AUDIENCE, JWT_ISSUER, ALLOWED_ORIGINS, LOG_LEVEL)
-- [ ] T004 [P] Create docker-compose.yml in backend/ for local PostgreSQL development database
-- [ ] T005 [P] Create .gitignore for backend/ (exclude .env, __pycache__/, .venv/, .pytest_cache/)
+- [X] T001 Create backend directory structure per plan.md (backend/src/{api,core,models,repositories,services,schemas,middleware}, backend/alembic/, backend/tests/{unit,integration}/)
+- [X] T002 Initialize Python project with uv in backend/ directory (uv init, create pyproject.toml with FastAPI 0.115+, SQLModel 0.0.22+, Pydantic v2 dependencies)
+- [X] T003 [P] Create .env.example file in backend/ with required environment variables (DATABASE_URL, JWT_PUBLIC_KEY, JWT_ALGORITHM, JWT_AUDIENCE, JWT_ISSUER, ALLOWED_ORIGINS, LOG_LEVEL)
+- [X] T004 [P] Create docker-compose.yml in backend/ for local PostgreSQL development database
+- [X] T005 [P] Create .gitignore for backend/ (exclude .env, __pycache__/, .venv/, .pytest_cache/)
 
 ---
 
@@ -39,17 +39,17 @@ This is a web application backend using the structure defined in plan.md:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create base SQLModel in backend/src/models/base.py with common fields (id: UUID, created_at, updated_at)
-- [ ] T007 Create Pydantic settings configuration in backend/src/core/config.py (BaseSettings with DATABASE_URL, JWT config, CORS, logging)
-- [ ] T008 [P] Setup structured logging in backend/src/core/logging.py (structlog configuration with JSON formatting, correlation IDs)
-- [ ] T009 Create async database connection manager in backend/src/core/database.py (async engine with connection pooling: pool_size=20, max_overflow=10)
-- [ ] T010 Create JWT verification utilities in backend/src/core/security.py (RS256 token decode, user_id extraction from "sub" claim)
-- [ ] T011 Create correlation ID middleware in backend/src/middleware/correlation_id.py (generate UUID for each request, inject into request.state)
-- [ ] T012 Create global error handler middleware in backend/src/middleware/error_handler.py (catch all exceptions, return structured ErrorResponse with correlation ID)
-- [ ] T013 Create Pydantic error response schemas in backend/src/schemas/common.py (ErrorResponse, PaginationMetadata)
-- [ ] T014 Initialize Alembic for migrations in backend/alembic/ (alembic init, configure env.py with async engine, SQLModel metadata)
-- [ ] T015 Create pytest configuration in backend/tests/conftest.py (async test fixtures, database session, test client)
-- [ ] T016 Create FastAPI application entry point in backend/main.py (FastAPI app with CORS, middleware registration, lifespan events)
+- [X] T006 Create base SQLModel in backend/src/models/base.py with common fields (id: UUID, created_at, updated_at)
+- [X] T007 Create Pydantic settings configuration in backend/src/core/config.py (BaseSettings with DATABASE_URL, JWT config, CORS, logging)
+- [X] T008 [P] Setup structured logging in backend/src/core/logging.py (structlog configuration with JSON formatting, correlation IDs)
+- [X] T009 Create async database connection manager in backend/src/core/database.py (async engine with connection pooling: pool_size=20, max_overflow=10)
+- [X] T010 Create JWT verification utilities in backend/src/core/security.py (RS256 token decode, user_id extraction from "sub" claim)
+- [X] T011 Create correlation ID middleware in backend/src/middleware/correlation_id.py (generate UUID for each request, inject into request.state)
+- [X] T012 Create global error handler middleware in backend/src/middleware/error_handler.py (catch all exceptions, return structured ErrorResponse with correlation ID)
+- [X] T013 Create Pydantic error response schemas in backend/src/schemas/common.py (ErrorResponse, PaginationMetadata)
+- [X] T014 Initialize Alembic for migrations in backend/alembic/ (alembic init, configure env.py with async engine, SQLModel metadata)
+- [X] T015 Create pytest configuration in backend/tests/conftest.py (async test fixtures, database session, test client)
+- [X] T016 Create FastAPI application entry point in backend/main.py (FastAPI app with CORS, middleware registration, lifespan events)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -63,11 +63,11 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 1
 
-- [ ] T017 [P] [US1] Create authentication dependency in backend/src/api/deps.py (get_current_user function using HTTPBearer, decode JWT with RS256, extract user_id from "sub")
-- [ ] T018 [P] [US1] Create health check router in backend/src/api/v1/endpoints/health.py (GET /health, GET /health/db, GET /health/ready - all public, no auth required)
-- [ ] T019 [US1] Register health endpoints in backend/main.py (include health router before v1 API router, mark as public)
-- [ ] T020 [US1] Create v1 API router aggregator in backend/src/api/v1/router.py (aggregate all v1 endpoints under /api/v1 prefix)
-- [ ] T021 [US1] Update main.py to register v1 router with authentication dependency (include v1 router, apply get_current_user to protected routes)
+- [X] T017 [P] [US1] Create authentication dependency in backend/src/api/deps.py (get_current_user function using HTTPBearer, decode JWT with RS256, extract user_id from "sub")
+- [X] T018 [P] [US1] Create health check router in backend/src/api/v1/endpoints/health.py (GET /health, GET /health/db, GET /health/ready - all public, no auth required)
+- [X] T019 [US1] Register health endpoints in backend/main.py (include health router before v1 API router, mark as public)
+- [X] T020 [US1] Create v1 API router aggregator in backend/src/api/v1/router.py (aggregate all v1 endpoints under /api/v1 prefix)
+- [X] T021 [US1] Update main.py to register v1 router with authentication dependency (include v1 router, apply get_current_user to protected routes)
 
 **Checkpoint**: JWT authentication middleware is operational. Health endpoints work without auth. Protected endpoints require valid JWT tokens.
 
@@ -81,15 +81,15 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Create Idea SQLModel in backend/src/models/idea.py (UUID id, user_id string, title VARCHAR(200), notes TEXT(5000), stage enum default "idea", priority enum default "medium", tags JSONB array, due_date timestamp nullable, created_at, updated_at)
-- [ ] T023 [P] [US2] Create Pydantic request/response schemas in backend/src/schemas/idea.py (IdeaCreate, IdeaUpdate, IdeaResponse with validation rules from data-model.md)
-- [ ] T024 [US2] Create Alembic migration for ideas table in backend/alembic/versions/001_create_ideas_table.py (create ideas table, stage/priority ENUMs, 5 indexes per data-model.md)
-- [ ] T025 [US2] Create base repository pattern in backend/src/repositories/base_repository.py (generic CRUD methods with async session)
-- [ ] T026 [US2] Create idea repository in backend/src/repositories/idea_repository.py (create, get_by_id, get_by_user, update, delete methods with user_id filtering)
-- [ ] T027 [US2] Create idea service in backend/src/services/idea_service.py (business logic layer: create_idea, get_idea, list_ideas with authorization checks)
-- [ ] T028 [US2] Create ideas router in backend/src/api/v1/endpoints/ideas.py (POST /api/v1/{user_id}/ideas, GET /api/v1/{user_id}/ideas/{id}, GET /api/v1/{user_id}/ideas with pagination)
-- [ ] T029 [US2] Register ideas router in backend/src/api/v1/router.py (include ideas router with authentication dependency)
-- [ ] T030 [US2] Add user_id path validation in ideas endpoints (verify path user_id matches authenticated user from JWT, return 403 if mismatch)
+- [X] T022 [P] [US2] Create Idea SQLModel in backend/src/models/idea.py (UUID id, user_id string, title VARCHAR(200), notes TEXT(5000), stage enum default "idea", priority enum default "medium", tags JSONB array, due_date timestamp nullable, created_at, updated_at)
+- [X] T023 [P] [US2] Create Pydantic request/response schemas in backend/src/schemas/idea.py (IdeaCreate, IdeaUpdate, IdeaResponse with validation rules from data-model.md)
+- [X] T024 [US2] Create Alembic migration for ideas table in backend/alembic/versions/001_create_ideas_table.py (create ideas table, stage/priority ENUMs, 5 indexes per data-model.md)
+- [X] T025 [US2] Create base repository pattern in backend/src/repositories/base_repository.py (generic CRUD methods with async session)
+- [X] T026 [US2] Create idea repository in backend/src/repositories/idea_repository.py (create, get_by_id, get_by_user, update, delete methods with user_id filtering)
+- [X] T027 [US2] Create idea service in backend/src/services/idea_service.py (business logic layer: create_idea, get_idea, list_ideas with authorization checks)
+- [X] T028 [US2] Create ideas router in backend/src/api/v1/endpoints/ideas.py (POST /api/v1/{user_id}/ideas, GET /api/v1/{user_id}/ideas/{id}, GET /api/v1/{user_id}/ideas with pagination)
+- [X] T029 [US2] Register ideas router in backend/src/api/v1/router.py (include ideas router with authentication dependency)
+- [X] T030 [US2] Add user_id path validation in ideas endpoints (verify path user_id matches authenticated user from JWT, return 403 if mismatch)
 
 **Checkpoint**: Users can create ideas with title/notes, retrieve specific ideas by ID, and list all their ideas with pagination. Authorization ensures users only access their own ideas.
 
@@ -103,11 +103,11 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Add PATCH endpoint in backend/src/api/v1/endpoints/ideas.py (PATCH /api/v1/{user_id}/ideas/{id} for partial updates)
-- [ ] T032 [US3] Add PUT endpoint in backend/src/api/v1/endpoints/ideas.py (PUT /api/v1/{user_id}/ideas/{id} for full replacement)
-- [ ] T033 [US3] Implement update_idea method in backend/src/services/idea_service.py (validate stage enum, handle partial updates, update updated_at timestamp)
-- [ ] T034 [US3] Add stage validation in backend/src/schemas/idea.py (IdeaUpdate schema with stage enum validation, return 400 with valid values on invalid stage)
-- [ ] T035 [US3] Implement authorization check in update operations (verify idea belongs to authenticated user, return 403 if mismatch)
+- [X] T031 [US3] Add PATCH endpoint in backend/src/api/v1/endpoints/ideas.py (PATCH /api/v1/{user_id}/ideas/{id} for partial updates)
+- [X] T032 [US3] Add PUT endpoint in backend/src/api/v1/endpoints/ideas.py (PUT /api/v1/{user_id}/ideas/{id} for full replacement)
+- [X] T033 [US3] Implement update_idea method in backend/src/services/idea_service.py (validate stage enum, handle partial updates, update updated_at timestamp)
+- [X] T034 [US3] Add stage validation in backend/src/schemas/idea.py (IdeaUpdate schema with stage enum validation, return 400 with valid values on invalid stage)
+- [X] T035 [US3] Implement authorization check in update operations (verify idea belongs to authenticated user, return 403 if mismatch)
 
 **Checkpoint**: Users can update idea title, notes, and stage. Stage enum validation rejects invalid values. Authorization prevents users from updating others' ideas.
 
@@ -121,10 +121,10 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 4
 
-- [ ] T036 [US4] Add DELETE endpoint in backend/src/api/v1/endpoints/ideas.py (DELETE /api/v1/{user_id}/ideas/{id} returns 204 on success)
-- [ ] T037 [US4] Implement delete_idea method in backend/src/services/idea_service.py (hard delete, no soft delete, verify ownership)
-- [ ] T038 [US4] Add delete method in backend/src/repositories/idea_repository.py (async delete with user_id filter for authorization)
-- [ ] T039 [US4] Handle 404 error when deleting non-existent idea (return structured error response with request_id)
+- [X] T036 [US4] Add DELETE endpoint in backend/src/api/v1/endpoints/ideas.py (DELETE /api/v1/{user_id}/ideas/{id} returns 204 on success)
+- [X] T037 [US4] Implement delete_idea method in backend/src/services/idea_service.py (hard delete, no soft delete, verify ownership)
+- [X] T038 [US4] Add delete method in backend/src/repositories/idea_repository.py (async delete with user_id filter for authorization)
+- [X] T039 [US4] Handle 404 error when deleting non-existent idea (return structured error response with request_id)
 
 **Checkpoint**: Users can permanently delete ideas. Deleted ideas return 404 on subsequent retrieval. Authorization prevents users from deleting others' ideas.
 
@@ -138,10 +138,10 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 5
 
-- [ ] T040 [US5] Add priority validation in backend/src/schemas/idea.py (PriorityEnum validation, default "medium", reject invalid priorities with error listing valid values)
-- [ ] T041 [US5] Add tags validation in backend/src/schemas/idea.py (validate tags is array of strings, allow empty array)
-- [ ] T042 [US5] Update create_idea and update_idea in backend/src/services/idea_service.py (handle tags array, validate priority enum)
-- [ ] T043 [US5] Ensure tags JSONB and priority ENUM are properly indexed in migration (verify indexes from 001_create_ideas_table.py)
+- [X] T040 [US5] Add priority validation in backend/src/schemas/idea.py (PriorityEnum validation, default "medium", reject invalid priorities with error listing valid values)
+- [X] T041 [US5] Add tags validation in backend/src/schemas/idea.py (validate tags is array of strings, allow empty array)
+- [X] T042 [US5] Update create_idea and update_idea in backend/src/services/idea_service.py (handle tags array, validate priority enum)
+- [X] T043 [US5] Ensure tags JSONB and priority ENUM are properly indexed in migration (verify indexes from 001_create_ideas_table.py)
 
 **Checkpoint**: Users can assign multiple tags and priority levels to ideas. Tags stored as JSONB array. Priority stored as ENUM with validation.
 
@@ -155,13 +155,13 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 6
 
-- [ ] T044 [P] [US6] Add search parameter to list endpoint in backend/src/api/v1/endpoints/ideas.py (query param "search" for keyword matching in title/notes, case-insensitive)
-- [ ] T045 [P] [US6] Add stage filter parameter to list endpoint (query param "stage" with enum validation)
-- [ ] T046 [P] [US6] Add priority filter parameter to list endpoint (query param "priority" with enum validation)
-- [ ] T047 [P] [US6] Add tags filter parameter to list endpoint (query param "tags" comma-separated, OR logic for multiple tags)
-- [ ] T048 [US6] Implement filter_ideas method in backend/src/repositories/idea_repository.py (build WHERE clause with user_id AND search ILIKE AND stage= AND priority= AND tags @> filters)
-- [ ] T049 [US6] Update list_ideas in backend/src/services/idea_service.py (pass filter parameters to repository, handle combined filters with AND logic)
-- [ ] T050 [US6] Add pagination metadata to list response (total count, limit, offset, has_more boolean)
+- [X] T044 [P] [US6] Add search parameter to list endpoint in backend/src/api/v1/endpoints/ideas.py (query param "search" for keyword matching in title/notes, case-insensitive)
+- [X] T045 [P] [US6] Add stage filter parameter to list endpoint (query param "stage" with enum validation)
+- [X] T046 [P] [US6] Add priority filter parameter to list endpoint (query param "priority" with enum validation)
+- [X] T047 [P] [US6] Add tags filter parameter to list endpoint (query param "tags" comma-separated, OR logic for multiple tags)
+- [X] T048 [US6] Implement filter_ideas method in backend/src/repositories/idea_repository.py (build WHERE clause with user_id AND search ILIKE AND stage= AND priority= AND tags @> filters)
+- [X] T049 [US6] Update list_ideas in backend/src/services/idea_service.py (pass filter parameters to repository, handle combined filters with AND logic)
+- [X] T050 [US6] Add pagination metadata to list response (total count, limit, offset, has_more boolean)
 
 **Checkpoint**: Users can search ideas by keywords, filter by stage/priority/tags, combine multiple filters. Pagination shows total count and has_more indicator.
 
@@ -175,9 +175,9 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 7
 
-- [ ] T051 [US7] Add due_date validation in backend/src/schemas/idea.py (Optional[datetime], validate ISO 8601 format, allow null)
-- [ ] T052 [US7] Update create_idea and update_idea in backend/src/services/idea_service.py (handle due_date as optional timestamp, allow setting to null to clear)
-- [ ] T053 [US7] Ensure due_date field properly handles null values in backend/src/repositories/idea_repository.py (support setting due_date=None to clear)
+- [X] T051 [US7] Add due_date validation in backend/src/schemas/idea.py (Optional[datetime], validate ISO 8601 format, allow null)
+- [X] T052 [US7] Update create_idea and update_idea in backend/src/services/idea_service.py (handle due_date as optional timestamp, allow setting to null to clear)
+- [X] T053 [US7] Ensure due_date field properly handles null values in backend/src/repositories/idea_repository.py (support setting due_date=None to clear)
 
 **Checkpoint**: Users can set due dates on ideas, update due dates, and clear due dates (set to null). Dates stored in UTC as ISO 8601 timestamps.
 
@@ -191,11 +191,11 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 8
 
-- [ ] T054 [P] [US8] Add sort parameter to list endpoint in backend/src/api/v1/endpoints/ideas.py (query param "sort" with enum: created_at, updated_at, title, priority, stage)
-- [ ] T055 [P] [US8] Add order parameter to list endpoint (query param "order" with enum: asc, desc, default desc)
-- [ ] T056 [US8] Implement sort logic in backend/src/repositories/idea_repository.py (dynamic ORDER BY clause based on sort field and order direction)
-- [ ] T057 [US8] Update list_ideas in backend/src/services/idea_service.py (pass sort and order parameters to repository)
-- [ ] T058 [US8] Add default sort behavior (default to created_at DESC when no sort specified)
+- [X] T054 [P] [US8] Add sort parameter to list endpoint in backend/src/api/v1/endpoints/ideas.py (query param "sort" with enum: created_at, updated_at, title, priority, stage)
+- [X] T055 [P] [US8] Add order parameter to list endpoint (query param "order" with enum: asc, desc, default desc)
+- [X] T056 [US8] Implement sort logic in backend/src/repositories/idea_repository.py (dynamic ORDER BY clause based on sort field and order direction)
+- [X] T057 [US8] Update list_ideas in backend/src/services/idea_service.py (pass sort and order parameters to repository)
+- [X] T058 [US8] Add default sort behavior (default to created_at DESC when no sort specified)
 
 **Checkpoint**: Users can sort ideas by creation date, priority, stage, or title in ascending/descending order. Default sort is newest first (created_at DESC).
 
@@ -209,14 +209,14 @@ This is a web application backend using the structure defined in plan.md:
 
 ### Implementation for User Story 9
 
-- [ ] T059 [P] [US9] Create multi-stage Dockerfile in backend/Dockerfile (Stage 1: builder with uv, Stage 2: runtime with python:3.13-slim, non-root user, <500MB target)
-- [ ] T060 [P] [US9] Add HEALTHCHECK directive to Dockerfile (interval 30s, timeout 3s, check /health endpoint)
-- [ ] T061 [P] [US9] Create .dockerignore in backend/ (exclude .env, .venv/, __pycache__/, .git/, tests/, *.md)
-- [ ] T062 [US9] Update docker-compose.yml to include API service (backend API + PostgreSQL database, environment variables, port mapping, depends_on)
-- [ ] T063 [US9] Add database migration to container startup in Dockerfile CMD (run "alembic upgrade head && uvicorn main:app")
-- [ ] T064 [US9] Add graceful shutdown handler in backend/main.py (handle SIGTERM, close database connections, complete in-flight requests)
-- [ ] T065 [US9] Add environment variable validation on startup in backend/src/core/config.py (fail fast with clear error if required vars missing: DATABASE_URL, JWT_PUBLIC_KEY)
-- [ ] T066 [US9] Test Docker build and verify image size <500MB (docker build -t creatorvault-backend ., docker images)
+- [X] T059 [P] [US9] Create multi-stage Dockerfile in backend/Dockerfile (Stage 1: builder with uv, Stage 2: runtime with python:3.13-slim, non-root user, <500MB target)
+- [X] T060 [P] [US9] Add HEALTHCHECK directive to Dockerfile (interval 30s, timeout 3s, check /health endpoint)
+- [X] T061 [P] [US9] Create .dockerignore in backend/ (exclude .env, .venv/, __pycache__/, .git/, tests/, *.md)
+- [X] T062 [US9] Update docker-compose.yml to include API service (backend API + PostgreSQL database, environment variables, port mapping, depends_on)
+- [X] T063 [US9] Add database migration to container startup in Dockerfile CMD (run "alembic upgrade head && uvicorn main:app")
+- [X] T064 [US9] Add graceful shutdown handler in backend/main.py (handle SIGTERM, close database connections, complete in-flight requests)
+- [X] T065 [US9] Add environment variable validation on startup in backend/src/core/config.py (fail fast with clear error if required vars missing: DATABASE_URL, JWT_PUBLIC_KEY)
+- [X] T066 [US9] Test Docker build and verify image size <500MB (docker build -t creatorvault-backend ., docker images)
 
 **Checkpoint**: Backend API is fully containerized. Docker image under 500MB. Container runs migrations on startup, responds to health checks, gracefully shuts down on SIGTERM.
 
@@ -226,16 +226,16 @@ This is a web application backend using the structure defined in plan.md:
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T067 [P] Add OpenAPI documentation examples to all endpoints in backend/src/api/v1/endpoints/*.py (request/response examples per contracts/openapi-spec.yaml)
-- [ ] T068 [P] Add request/response logging in backend/src/middleware/correlation_id.py (log request method, path, status code, duration with correlation ID)
-- [ ] T069 [P] Add rate limiting headers to responses in backend/main.py (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
-- [ ] T070 [P] Add security headers to responses in backend/main.py (X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security)
-- [ ] T071 Verify quickstart.md instructions work end-to-end (follow specs/001-backend-api/quickstart.md from scratch, verify all commands succeed)
-- [ ] T072 Run Alembic migrations and verify database schema matches data-model.md (alembic upgrade head, inspect tables/indexes)
-- [ ] T073 Validate OpenAPI spec matches implementation (start server, access /docs, verify all endpoints documented)
-- [ ] T074 [P] Add user profile endpoint in backend/src/api/v1/endpoints/users.py (GET /api/v1/users/me returns authenticated user info)
-- [ ] T075 Performance optimization: verify connection pool configuration (check pool_size=20, max_overflow=10 in database.py)
-- [ ] T076 Security audit: verify JWT verification uses RS256 and validates issuer/audience (review core/security.py)
+- [X] T067 [P] Add OpenAPI documentation examples to all endpoints in backend/src/api/v1/endpoints/*.py (request/response examples per contracts/openapi-spec.yaml)
+- [X] T068 [P] Add request/response logging in backend/src/middleware/correlation_id.py (log request method, path, status code, duration with correlation ID)
+- [X] T069 [P] Add rate limiting headers to responses in backend/main.py (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset)
+- [X] T070 [P] Add security headers to responses in backend/main.py (X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security)
+- [X] T071 Verify quickstart.md instructions work end-to-end (follow specs/001-backend-api/quickstart.md from scratch, verify all commands succeed)
+- [X] T072 Run Alembic migrations and verify database schema matches data-model.md (alembic upgrade head, inspect tables/indexes)
+- [X] T073 Validate OpenAPI spec matches implementation (start server, access /docs, verify all endpoints documented)
+- [X] T074 [P] Add user profile endpoint in backend/src/api/v1/endpoints/users.py (GET /api/v1/users/me returns authenticated user info)
+- [X] T075 Performance optimization: verify connection pool configuration (check pool_size=20, max_overflow=10 in database.py)
+- [X] T076 Security audit: verify JWT verification uses RS256 and validates issuer/audience (review core/security.py)
 
 ---
 
