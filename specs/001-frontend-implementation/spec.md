@@ -169,14 +169,16 @@ As a **development team**, we want comprehensive end-to-end tests covering criti
 
 ### Edge Cases
 
-- What happens when a user tries to create an idea with a very long title (> 200 characters)? System should truncate or show validation error.
-- How does the system handle network errors during idea creation? Show user-friendly error message with retry option.
+- What happens when a user tries to create an idea with a very long title (> 200 characters)? System should truncate or show validation error (handled by Zod validation in FR-018).
+- How does the system handle network errors during idea creation? Show user-friendly error message with retry option (handled by FR-041, FR-044).
 - What happens when a user has 1000+ ideas? Implement pagination to avoid performance degradation.
+  - **Note**: Backend API supports pagination via `limit` and `offset` parameters. Frontend will implement client-side pagination in Phase 2.4 (see T044, T062). For MVP Phase 2, frontend will implement simple pagination (e.g., load 50 items with "Load More" button). Infinite scroll can be added in Phase 3.
 - How does the system handle concurrent edits to the same idea from multiple devices? Last-write-wins with timestamp-based conflict resolution.
-- What happens when OAuth provider is unavailable during signin? Show error message suggesting alternative signin methods.
-- How does the system handle expired JWT tokens? Automatically refresh if possible, otherwise redirect to signin page.
+  - **Note**: This is handled entirely by the backend FastAPI API. The backend uses `updated_at` timestamps to resolve conflicts. Frontend displays current timestamp on edit form and shows warning if data changed during edit (handled by FR-018 validation and T054 pre-fill logic).
+- What happens when OAuth provider is unavailable during signin? Show error message suggesting alternative signin methods (handled by FR-039, T032).
+- How does the system handle expired JWT tokens? Automatically refresh if possible, otherwise redirect to signin page (handled by FR-038, T118).
 - What happens when a user's session expires while they're filling out a long form? Attempt to save draft locally (Phase 3 enhancement).
-- How does the system handle XSS attempts in idea notes? Sanitize all user input on the backend before storage.
+- How does the system handle XSS attempts in idea notes? Sanitize all user input on the backend before storage (handled by backend FastAPI validation). Frontend does not need to sanitize - this is a backend responsibility per FR-038.
 
 ## Requirements *(mandatory)*
 

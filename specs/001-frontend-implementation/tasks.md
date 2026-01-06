@@ -4,7 +4,7 @@
 **Status**: Ready for Implementation
 **Plan**: [plan.md](./plan.md)
 **Spec**: [spec.md](./spec.md)
-**Total Tasks**: 84
+**Total Tasks**: 147 (includes T136-T147 for unit/component testing)
 
 ---
 
@@ -214,7 +214,30 @@
 
 ---
 
-### Phase 2.9: E2E Testing (Priority: P3)
+### Phase 2.9.1: Unit & Component Testing (Priority: P3)
+
+#### Requirements FR-056 and FR-057
+
+- [ ] T136 Install and configure Vitest for unit testing
+- [ ] T137 Install and configure React Testing Library for component testing
+- [ ] T138 Configure coverage reporting with @vitest/coverage-v8
+- [ ] T139 Write unit tests for lib/utils/cn.ts (class name merger)
+- [ ] T140 Write unit tests for lib/utils/format.ts (date/string formatting)
+- [ ] T141 Write unit tests for lib/utils/constants.ts (app constants)
+- [ ] T142 Write unit tests for lib/validation/idea.ts (Zod schema validation)
+- [ ] T143 Write component tests for IdeaCard component
+- [ ] T144 Write component tests for IdeaForm component
+- [ ] T145 Verify 80%+ unit test coverage for utility functions
+- [ ] T146 Verify 80%+ component test coverage for key components
+- [ ] T147 Set up pre-commit hook to run unit/component tests
+
+**Independent Test**: Unit tests pass with 80%+ coverage, component tests pass for all key components
+**Files**: `frontend/lib/utils/__tests__/`, `frontend/lib/validation/__tests__/`, `frontend/components/ideas/__tests__/`, `vitest.config.ts`, `vitest.workspace.ts`
+**Skills**: `/systematic-debugging`
+
+---
+
+### Phase 2.9.2: E2E Testing (Priority: P3)
 
 #### User Story 8: End-to-End Testing Coverage
 
@@ -246,7 +269,7 @@
 ### User Story Completion Order
 
 ```
-US1: Landing Page → US2: Auth → US3: Ideas CRUD → US4: Filters → US5: Dashboard → US6: Responsive → US7: API Integration → US8: E2E Tests
+US1: Landing Page → US2: Auth → US3: Ideas CRUD → US4: Filters → US5: Dashboard → US6: Responsive → US7: API Integration → US8: Unit/Component Tests → US9: E2E Tests
                       ↓
 US1 creates: All landing page components (hero, features, how-it-works)
 US2 creates: Auth forms, middleware, user menu
@@ -255,7 +278,8 @@ US4 creates: Filter components, search input
 US5 creates: Stats cards, recent ideas widget
 US6 creates: Layout components (mobile menu, sidebar)
 US7 creates: API client, error handling
-US8 creates: E2E tests
+US8 creates: Unit tests, component tests
+US9 creates: E2E tests
 ```
 
 ### Component Dependencies
@@ -344,7 +368,8 @@ API:
 - Complete Phase 2.5 (Filtering & Search)
 - Complete Phase 2.6 (Dashboard)
 - Complete Phase 2.7 (Responsive Design)
-- Complete Phase 2.9 (E2E Testing)
+- Complete Phase 2.9.1 (Unit & Component Testing)
+- Complete Phase 2.9.2 (E2E Testing)
 - Performance optimization and polish
 - **Production Milestone**: Full feature deployment
 
@@ -352,7 +377,7 @@ API:
 
 ## Test Strategy
 
-### Unit Tests (Target: 80%+ Coverage)
+### Unit Tests (Target: 80%+ Coverage for Utility Functions)
 
 **Utility Functions to Test:**
 - `lib/utils/cn.ts` - Class name merger
@@ -360,11 +385,28 @@ API:
 - `lib/utils/constants.ts` - App constants
 - `lib/validation/idea.ts` - Zod schema validation
 
+**Tools:**
+- Vitest for fast unit testing
+- @vitest/coverage-v8 for coverage reporting
+- Pre-commit hook (Husky or simple-git-hooks) to run tests on commit
+
+**Tasks:** T136-T147 (Phase 2.9.1)
+
+### Component Tests (Target: 80%+ Coverage for Key Components)
+
 **Components to Test:**
-- All form components with validation
-- All idea components
-- Filter components
-- Dashboard components
+- IdeaCard component (render, interaction, badge display)
+- IdeaForm component (validation, submission, error handling)
+- Form components with validation
+- Filter components (dropdowns, search)
+- Dashboard components (stats cards, recent ideas)
+
+**Tools:**
+- React Testing Library for component testing
+- Vitest as test runner
+- Mock Service Worker (MSW) for API mocking (optional)
+
+**Tasks:** T136-T147 (Phase 2.9.1)
 
 ### Integration Tests (Manual + API Mock)
 
@@ -384,6 +426,8 @@ API:
 ---
 
 ## Quality Checklist
+
+**Note**: Task checkboxes track completion. See "Task List" section above for full task descriptions (T001-T135).
 
 ### Foundation Setup (Phase 2.1)
 - [ ] T001 Create Next.js 16 project structure
@@ -487,7 +531,7 @@ API:
 - [ ] T089 Create empty state for no ideas
 - [ ] T090 Add "Create Your First Idea" CTA
 - [ ] T091 Test dashboard accuracy with mock data
-- [ ] T092 Create quick actions section
+- [ ] T092 Create quick actions section (define actions: create idea, view all ideas, view dashboard)
 
 ### Responsive Design (Phase 2.7)
 - [ ] T093 Define Tailwind breakpoints (mobile: < 768px, tablet: 768-1024px, desktop: > 1024px)
@@ -520,7 +564,21 @@ API:
 - [ ] T118 Handle session expiry and redirect to signin
 - [ ] T119 Test API integration with FastAPI backend
 
-### E2E Testing (Phase 2.9)
+### Unit & Component Testing (Phase 2.9.1)
+- [ ] T136 Install and configure Vitest for unit testing
+- [ ] T137 Install and configure React Testing Library for component testing
+- [ ] T138 Configure coverage reporting with v8/c8
+- [ ] T139 Write unit tests for lib/utils/cn.ts (class name merger)
+- [ ] T140 Write unit tests for lib/utils/format.ts (date/string formatting)
+- [ ] T141 Write unit tests for lib/utils/constants.ts (app constants)
+- [ ] T142 Write unit tests for lib/validation/idea.ts (Zod schema validation)
+- [ ] T143 Write component tests for IdeaCard component
+- [ ] T144 Write component tests for IdeaForm component
+- [ ] T145 Verify 80%+ unit test coverage for utility functions
+- [ ] T146 Verify 80%+ component test coverage for key components
+- [ ] T147 Set up pre-commit hook to run unit/component tests
+
+### E2E Testing (Phase 2.9.2)
 - [ ] T120 Install and configure Playwright
 - [ ] T121 Create test directory structure
 - [ ] T122 Configure test environment variables
@@ -554,7 +612,8 @@ API:
 | 2.6 Dashboard | Dashboard loads < 2s | ✅ Manual testing |
 | 2.7 Responsive | Mobile usability 90%+ | ✅ Device testing |
 | 2.8 API Integration | 99.9%+ API success | ✅ Monitoring |
-| 2.9 E2E Testing | 80%+ coverage, 95%+ pass rate | ✅ Test execution |
+| 2.9.1 Unit/Component Tests | 80%+ coverage | ✅ Vitest coverage report |
+| 2.9.2 E2E Testing | 80%+ coverage, 95%+ pass rate | ✅ Test execution |
 
 ---
 
