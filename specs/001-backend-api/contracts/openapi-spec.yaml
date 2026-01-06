@@ -1,0 +1,602 @@
+openapi: 3.1.0
+info:
+  title: CreatorVault Backend API
+  version: 1.0.0
+  description: |
+    RESTful API for CreatorVault Phase 2 - Content Idea Management
+
+    ## Authentication
+    All endpoints (except health checks and documentation) require JWT authentication.
+    Include JWT token in Authorization header: `Authorization: Bearer <token>`
+
+    ## Pagination
+    List endpoints support pagination with `limit` (default 20, max 100) and `offset` (default 0) query parameters.
+
+    ## Error Responses
+    All errors follow consistent format with `error_code`, `message`, `request_id`, and optional `details`.
+
+  contact:
+    name: CreatorVault API Support
+    email: api@creatorvault.dev
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.creatorvault.dev
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Health
+    description: Health check and monitoring endpoints (public)
+  - name: Ideas
+    description: Content idea CRUD operations (authenticated)
+  - name: Users
+    description: User profile management (authenticated)
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: API health check
+      description: Returns API availability status. Does not require authentication.
+      operationId: getHealth
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2026-01-05T10:30:00Z"
+
+  /health/db:
+    get:
+      tags: [Health]
+      summary: Database health check
+      description: Verifies database connectivity. Does not require authentication.
+      operationId: getHealthDb
+      security: []
+      responses:
+        '200':
+          description: Database is connected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  database:
+                    type: string
+                    example: connected
+        '503':
+          description: Database unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health/ready:
+    get:
+      tags: [Health]
+      summary: Readiness probe
+      description: Kubernetes readiness probe. Does not require authentication.
+      operationId: getHealthReady
+      security: []
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ready:
+                    type: boolean
+                    example: true
+
+  /api/v1/{user_id}/ideas:
+    get:
+      tags: [Ideas]
+      summary: List user ideas
+      description: Retrieve paginated list of ideas with optional filtering and sorting.
+      operationId: listIdeas
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - name: search
+          in: query
+          description: Keyword search in title and notes (case-insensitive)
+          required: false
+          schema:
+            type: string
+            example: "AI tools"
+        - name: stage
+          in: query
+          description: Filter by content stage
+          required: false
+          schema:
+            $ref: '#/components/schemas/StageEnum'
+        - name: priority
+          in: query
+          description: Filter by priority level
+          required: false
+          schema:
+            $ref: '#/components/schemas/PriorityEnum'
+        - name: tags
+          in: query
+          description: Filter by tags (comma-separated, OR logic)
+          required: false
+          schema:
+            type: string
+            example: "blog,video"
+        - name: sort
+          in: query
+          description: Sort field
+          required: false
+          schema:
+            type: string
+            enum: [created_at, updated_at, title, priority, stage]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          description: Page size (max 100)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of ideas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdeaListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+    post:
+      tags: [Ideas]
+      summary: Create new idea
+      description: Create a new content idea for the authenticated user.
+      operationId: createIdea
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdeaCreate'
+      responses:
+        '201':
+          description: Idea created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdeaResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /api/v1/{user_id}/ideas/{idea_id}:
+    get:
+      tags: [Ideas]
+      summary: Get idea by ID
+      description: Retrieve a specific idea by its unique identifier.
+      operationId: getIdea
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: '#/components/parameters/IdeaIdPath'
+      responses:
+        '200':
+          description: Idea details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdeaResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags: [Ideas]
+      summary: Replace idea
+      description: Replace entire idea with new data (all fields required).
+      operationId: replaceIdea
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: '#/components/parameters/IdeaIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdeaCreate'
+      responses:
+        '200':
+          description: Idea replaced successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdeaResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    patch:
+      tags: [Ideas]
+      summary: Update idea
+      description: Partially update idea (only provided fields are modified).
+      operationId: updateIdea
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: '#/components/parameters/IdeaIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdeaUpdate'
+      responses:
+        '200':
+          description: Idea updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdeaResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags: [Ideas]
+      summary: Delete idea
+      description: Permanently delete an idea (no soft delete).
+      operationId: deleteIdea
+      parameters:
+        - $ref: '#/components/parameters/UserIdPath'
+        - $ref: '#/components/parameters/IdeaIdPath'
+      responses:
+        '204':
+          description: Idea deleted successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/v1/users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      description: Retrieve authenticated user's profile information.
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from Better Auth service
+
+  parameters:
+    UserIdPath:
+      name: user_id
+      in: path
+      required: true
+      description: User identifier (must match authenticated user)
+      schema:
+        type: string
+        example: "user_123abc"
+
+    IdeaIdPath:
+      name: idea_id
+      in: path
+      required: true
+      description: Idea unique identifier (UUID)
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+
+  schemas:
+    StageEnum:
+      type: string
+      enum: [idea, outline, draft, published]
+      description: Content development stage
+      example: "draft"
+
+    PriorityEnum:
+      type: string
+      enum: [high, medium, low]
+      description: Priority level
+      example: "high"
+
+    IdeaCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Idea title or headline
+          example: "Top 5 AI Writing Tools for 2026"
+        notes:
+          type: string
+          maxLength: 5000
+          nullable: true
+          description: Detailed notes or description
+          example: "Compare ChatGPT, Claude, Jasper, Copy.ai, and Writesonic."
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        tags:
+          type: array
+          items:
+            type: string
+          default: []
+          description: Content type tags
+          example: ["blog", "ai", "tools"]
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional deadline (ISO 8601 UTC)
+          example: "2026-01-15T00:00:00Z"
+
+    IdeaUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+          maxLength: 5000
+          nullable: true
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        tags:
+          type: array
+          items:
+            type: string
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+
+    IdeaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        user_id:
+          type: string
+          example: "user_123abc"
+        title:
+          type: string
+          example: "Top 5 AI Writing Tools for 2026"
+        notes:
+          type: string
+          nullable: true
+          example: "Compare ChatGPT, Claude, Jasper, Copy.ai, and Writesonic."
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["blog", "ai", "tools"]
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-01-15T00:00:00Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-05T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-01-05T14:22:00Z"
+      required:
+        - id
+        - user_id
+        - title
+        - stage
+        - priority
+        - tags
+        - created_at
+        - updated_at
+
+    IdeaListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdeaResponse'
+        total:
+          type: integer
+          description: Total count of ideas matching filters
+          example: 150
+        limit:
+          type: integer
+          description: Page size used
+          example: 20
+        offset:
+          type: integer
+          description: Pagination offset used
+          example: 0
+        has_more:
+          type: boolean
+          description: Whether more results exist
+          example: true
+      required:
+        - items
+        - total
+        - limit
+        - offset
+        - has_more
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user_123abc"
+        email:
+          type: string
+          format: email
+          example: "creator@example.com"
+      required:
+        - id
+
+    ErrorResponse:
+      type: object
+      properties:
+        error_code:
+          type: string
+          description: Machine-readable error code
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Title exceeds maximum length of 200 characters"
+        request_id:
+          type: string
+          format: uuid
+          description: Correlation ID for tracing
+          example: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+        details:
+          type: object
+          nullable: true
+          description: Optional additional error context
+          example:
+            field: "title"
+            constraint: "max_length"
+      required:
+        - error_code
+        - message
+        - request_id
+
+  responses:
+    ValidationError:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: "VALIDATION_ERROR"
+            message: "Title exceeds maximum length of 200 characters"
+            request_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+            details:
+              field: "title"
+              constraint: "max_length"
+
+    UnauthorizedError:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: "AUTHENTICATION_ERROR"
+            message: "Invalid token signature"
+            request_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+
+    ForbiddenError:
+      description: User cannot access this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: "AUTHORIZATION_ERROR"
+            message: "Forbidden: Cannot access other users' ideas"
+            request_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error_code: "NOT_FOUND"
+            message: "Idea not found"
+            request_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7"
