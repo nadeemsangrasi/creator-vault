@@ -37,7 +37,17 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
         # Content Security Policy (restrictive, adjust as needed)
-        response.headers["Content-Security-Policy"] = "default-src 'self'"
+        # Allow 'self' + cdn.jsdelivr.net for Swagger UI docs/redoc pages
+        if request.url.path in ["/docs", "/redoc"]:
+            csp = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+                "img-src 'self' https://fastly.picsum.photos https://cdn.jsdelivr.net"
+            )
+        else:
+            csp = "default-src 'self'"
+        response.headers["Content-Security-Policy"] = csp
 
         # Permissions Policy (restrict feature access)
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"

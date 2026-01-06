@@ -80,10 +80,22 @@ class IdeaRepository(BaseRepository[Idea]):
         if priority:
             query = query.where(Idea.priority == priority)
 
-        # Apply tags filter (JSONB contains)
+        # Apply tags filter (search in comma-separated string)
         if tags:
+            tag_conditions = []
             for tag in tags:
-                query = query.where(Idea.tags.contains([tag]))
+                # Match tag as whole word in comma-separated list
+                # Handles: "tag", "tag,other", "other,tag", "other,tag,another"
+                tag_conditions.append(
+                    or_(
+                        Idea.tags.ilike(f"{tag},%"),  # tag at start
+                        Idea.tags.ilike(f"%,{tag},%"),  # tag in middle
+                        Idea.tags.ilike(f"%,{tag}"),  # tag at end
+                        Idea.tags.ilike(tag)  # single tag
+                    )
+                )
+            # OR logic: match if ANY tag matches
+            query = query.where(or_(*tag_conditions))
 
         # Apply sorting
         sort_column = getattr(Idea, sort_by, Idea.created_at)
@@ -138,8 +150,19 @@ class IdeaRepository(BaseRepository[Idea]):
             query = query.where(Idea.priority == priority)
 
         if tags:
+            tag_conditions = []
             for tag in tags:
-                query = query.where(Idea.tags.contains([tag]))
+                # Match tag as whole word in comma-separated list
+                tag_conditions.append(
+                    or_(
+                        Idea.tags.ilike(f"{tag},%"),  # tag at start
+                        Idea.tags.ilike(f"%,{tag},%"),  # tag in middle
+                        Idea.tags.ilike(f"%,{tag}"),  # tag at end
+                        Idea.tags.ilike(tag)  # single tag
+                    )
+                )
+            # OR logic: match if ANY tag matches
+            query = query.where(or_(*tag_conditions))
 
         result = await self.session.execute(query)
         return result.scalar() or 0

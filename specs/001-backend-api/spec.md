@@ -227,19 +227,22 @@ The backend API must be containerized using Docker with optimized multi-stage bu
 - **FR-023**: System MUST default new ideas to "idea" stage unless explicitly specified
 - **FR-024**: System MUST validate stage values and reject invalid stages with clear error messages
 - **FR-025**: System MUST allow users to advance or change idea stage at any time
+- **Stage stored as VARCHAR(20)** in database (not PostgreSQL ENUM to avoid migration issues)
 
 #### Tagging and Organization
 
 - **FR-013**: System MUST allow users to assign multiple tags to each idea
-- **FR-014**: System MUST store tags as an array that can be empty or contain multiple values
+- **FR-014**: System MUST store tags as comma-separated string (VARCHAR 1000) that can be empty or contain multiple values
 - **FR-015**: System MUST support tag-based filtering to retrieve ideas matching one or more tags
 - **FR-016**: System MUST treat tags as case-sensitive strings
+- **Tags converted automatically**: Frontend sends array, backend converts to comma-separated string on save, converts back to array on retrieval
 
 #### Priority Management
 
 - **FR-017**: System MUST support exactly three priority levels: "high", "medium", "low"
 - **FR-018**: System MUST default new ideas to "medium" priority unless explicitly specified
 - **FR-019**: System MUST validate priority values and reject invalid priorities with clear error messages
+- **Priority stored as VARCHAR(10)** in database (not PostgreSQL ENUM to avoid migration issues)
 
 #### Due Date Management
 

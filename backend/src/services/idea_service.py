@@ -33,7 +33,7 @@ class IdeaService:
         Raises:
             HTTPException: If validation fails
         """
-        # Create idea instance
+        # Create idea instance (convert tags list to comma-separated string)
         idea = Idea(
             id=uuid4(),
             user_id=user_id,
@@ -41,7 +41,7 @@ class IdeaService:
             notes=idea_data.notes,
             stage=idea_data.stage,
             priority=idea_data.priority,
-            tags=idea_data.tags,
+            tags=",".join(idea_data.tags) if idea_data.tags else "",
             due_date=idea_data.due_date,
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc)
@@ -176,6 +176,11 @@ class IdeaService:
 
         # Update fields (only non-None values)
         update_dict = update_data.model_dump(exclude_unset=True)
+
+        # Convert tags list to comma-separated string if provided
+        if "tags" in update_dict and update_dict["tags"] is not None:
+            update_dict["tags"] = ",".join(update_dict["tags"]) if update_dict["tags"] else ""
+
         for field, value in update_dict.items():
             setattr(idea, field, value)
 

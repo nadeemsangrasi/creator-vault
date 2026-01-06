@@ -109,6 +109,19 @@ class IdeaResponse(IdeaBase):
         description="Timestamp when idea was last modified (UTC)"
     )
 
+    @field_validator("tags", mode="before")
+    @classmethod
+    def parse_tags(cls, v):
+        """Convert comma-separated string from database to list."""
+        if isinstance(v, str):
+            # Handle empty string
+            if not v or not v.strip():
+                return []
+            # Split by comma and strip whitespace
+            return [tag.strip() for tag in v.split(",") if tag.strip()]
+        # Already a list (from Pydantic input)
+        return v if v else []
+
     class Config:
         from_attributes = True
         json_schema_extra = {

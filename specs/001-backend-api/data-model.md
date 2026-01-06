@@ -32,9 +32,9 @@ This document defines the complete data model for CreatorVault Phase 2 backend, 
 │ user_id: string (FK to external user, indexed)                 │
 │ title: string (max 200 chars, required)                        │
 │ notes: string (max 5000 chars, nullable)                       │
-│ stage: StageEnum (idea/outline/draft/published, default=idea)  │
-│ priority: PriorityEnum (high/medium/low, default=medium)       │
-│ tags: JSONB array of strings (default=[])                      │
+│ stage: VARCHAR(20) (idea/outline/draft/published, default=idea) │
+│ priority: VARCHAR(10) (high/medium/low, default=medium)      │
+│ tags: VARCHAR(1000) comma-separated (default="")                │
 │ due_date: datetime (nullable, ISO 8601 UTC)                    │
 │ created_at: datetime (auto, UTC)                               │
 │ updated_at: datetime (auto, UTC)                               │
