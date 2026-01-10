@@ -1,52 +1,37 @@
-# Stage 1: Builder - Install dependencies
-FROM python:3.13-slim AS builder
-
-# Install uv for fast dependency management
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-
-# Set working directory
-WORKDIR /app
-
-# Copy dependency files
-COPY pyproject.toml .python-version ./
-
-# Install dependencies into /app/.venv
-RUN uv sync --frozen --no-dev
-
-# Stage 2: Runtime - Minimal production image
+# Use Python 3.13 slim image as base
 FROM python:3.13-slim
 
-# Install runtime dependencies for psycopg
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq5 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create non-root user
-RUN useradd -m -u 1000 appuser
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_SYSTEM_PYTHON=1
 
 # Set working directory
 WORKDIR /app
 
-# Copy virtual environment from builder
-COPY --from=builder /app/.venv /app/.venv
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy application code
-COPY --chown=appuser:appuser . .
+# Copy project files
+COPY pyproject.toml uv.lock ./
+COPY . .
 
-# Set PATH to use virtual environment
-ENV PATH="/app/.venv/bin:$PATH"
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# Install uv package manager
+RUN pip install --upgrade pip && pip install uv
 
-# Switch to non-root user
-USER appuser
+# Install dependencies using uv
+RUN uv sync --locked
 
-# Expose port
+# Expose port (default is 8000, but can be configured)
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD python -c "import httpx; httpx.get('http://localhost:8000/health', timeout=2)" || exit 1
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
 
-# Run migrations and start server
-CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000"]
+# Run the application with uvicorn
+CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload"]

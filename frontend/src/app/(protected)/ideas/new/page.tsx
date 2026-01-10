@@ -185,7 +185,9 @@ export default function NewIdeaPage() {
                <FormField
                  control={form.control}
                  name="tags"
-                 render={({ field }) => (
+                 render={({ field }) => {
+                   const { ref, value: fieldValue, ...fieldWithoutValueAndRef } = field;
+                   return (
                    <FormItem>
                      <FormLabel>Tags</FormLabel>
                      <div className="flex gap-2">
@@ -218,13 +220,14 @@ export default function NewIdeaPage() {
                      </div>
                      <input
                        type="hidden"
+                       ref={ref}
+                       {...fieldWithoutValueAndRef}
                        value={tags.join(',')}
-                       onChange={() => {}} // Read-only for react-hook-form
-                       {...field}
                      />
                      <FormMessage />
                    </FormItem>
-                 )}
+                   )
+                 }}
                />
 
               <div className="flex justify-end gap-4">

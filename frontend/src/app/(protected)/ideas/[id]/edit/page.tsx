@@ -21,7 +21,7 @@ const ideaSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title is too long"),
   notes: z.string().optional(),
   stage: z.enum(["idea", "outline", "draft", "published"]),
-  priority: z.enum(["low", "medium", "high"]),
+  priority: z.enum(["low", "medium", "high"]).default("medium"),
   tags: z.string().optional(), // Comma separated
 });
 
@@ -250,7 +250,9 @@ export default function EditIdeaPage({ params }: EditIdeaPageProps) {
               <FormField
                 control={form.control}
                 name="tags"
-                render={({ field }) => (
+                render={({ field }) => {
+                  const { ref, value: fieldValue, ...fieldWithoutValueAndRef } = field;
+                  return (
                   <FormItem>
                     <FormLabel>Tags</FormLabel>
                     <div className="flex gap-2">
@@ -283,13 +285,14 @@ export default function EditIdeaPage({ params }: EditIdeaPageProps) {
                     </div>
                     <input
                       type="hidden"
+                      ref={ref}
+                      {...fieldWithoutValueAndRef}
                       value={tags.join(',')}
-                      onChange={() => {}} // Read-only for react-hook-form
-                      {...field}
                     />
                     <FormMessage />
                   </FormItem>
-                )}
+                  )
+                }}
               />
 
               <div className="flex justify-end gap-4">

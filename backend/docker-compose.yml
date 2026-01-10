@@ -1,44 +1,23 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: creatorvault-postgres
-    environment:
-      POSTGRES_USER: creatorvault
-      POSTGRES_PASSWORD: dev_password_change_in_production
-      POSTGRES_DB: creatorvault
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U creatorvault"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: creatorvault-backend
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql+psycopg://creatorvault:dev_password_change_in_production@postgres:5432/creatorvault
-      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
-      JWT_ALGORITHM: RS256
-      JWT_AUDIENCE: ${JWT_AUDIENCE:-https://localhost:3000}
-      JWT_ISSUER: ${JWT_ISSUER:-https://localhost:3000}
-      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
-      LOG_LEVEL: INFO
+    build: .
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - HOST=0.0.0.0
+      - PORT=8000
     volumes:
-      - ./src:/app/src:ro
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-
-volumes:
-  postgres_data:
+      - .:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
