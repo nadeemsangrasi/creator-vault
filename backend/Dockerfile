@@ -25,7 +25,7 @@ RUN pip install --upgrade pip && pip install uv
 # Install dependencies using uv
 RUN uv sync --locked
 
-# Expose port (default is 8000, but can be configured)
+# Expose port required by Hugging Face Spaces
 EXPOSE 8000
 
 # Create non-root user for security
@@ -33,5 +33,5 @@ RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app
 USER appuser
 
-# Run the application with uvicorn
-CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload"]
+# Run the application with uvicorn - Hugging Face Spaces compatible
+CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port 8000"]
