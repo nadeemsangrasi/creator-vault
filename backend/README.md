@@ -1,3 +1,13 @@
+---
+title: CreatorVault Backend API
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_file: Dockerfile
+pinned: false
+---
+
 # CreatorVault Backend API
 
 Backend API for Content Idea Management - Phase 2
