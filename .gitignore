@@ -1,0 +1,42 @@
+# Node.js/JavaScript/TypeScript
+node_modules/
+dist/
+build/
+*.log
+.env*
+.next/
+out/
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+*.egg-info/
+.pytest_cache/
+
+# Docker
+.dockerignore
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Terraform
+.terraform/
+*.tfstate*
+*.tfvars
+
+# CreatorVault specific
+specs/001-frontend-implementation/.next/
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+backend/venv/
+backend/.venv/
+backend/__pycache__/

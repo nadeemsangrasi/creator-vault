@@ -13,22 +13,10 @@ class Settings(BaseSettings):
         description="PostgreSQL connection URL (async psycopg)"
     )
 
-    # JWT Configuration (Better Auth Integration)
-    JWT_PUBLIC_KEY: str = Field(
+    # Better Auth Configuration
+    BETTER_AUTH_SECRET: str = Field(
         ...,
-        description="RS256 public key for JWT verification"
-    )
-    JWT_ALGORITHM: str = Field(
-        default="RS256",
-        description="JWT signing algorithm"
-    )
-    JWT_AUDIENCE: str = Field(
-        ...,
-        description="Expected JWT audience claim"
-    )
-    JWT_ISSUER: str = Field(
-        ...,
-        description="Expected JWT issuer claim"
+        description="Better Auth secret for JWT verification (HS256)"
     )
 
     # CORS Configuration

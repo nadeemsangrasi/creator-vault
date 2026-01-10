@@ -12,7 +12,7 @@ settings = get_settings()
 
 def decode_jwt_token(token: str) -> dict[str, Any]:
     """
-    Decode and verify JWT token using RS256 algorithm.
+    Decode and verify JWT token from Better Auth using HS256 algorithm.
 
     Args:
         token: JWT token string from Authorization header
@@ -24,17 +24,18 @@ def decode_jwt_token(token: str) -> dict[str, Any]:
         HTTPException: If token is invalid, expired, or verification fails
     """
     try:
+        # Better Auth uses HS256 algorithm with the same secret for signing and verification
         payload = jwt.decode(
             token,
-            settings.JWT_PUBLIC_KEY,
-            algorithms=[settings.JWT_ALGORITHM],
-            audience=settings.JWT_AUDIENCE,
-            issuer=settings.JWT_ISSUER,
+            settings.BETTER_AUTH_SECRET,
+            algorithms=["HS256"],
             options={
                 "verify_signature": True,
                 "verify_exp": True,
-                "verify_aud": True,
-                "verify_iss": True,
+                "verify_nbf": False,
+                "verify_iat": True,
+                "verify_aud": False,  # Better Auth may not set audience
+                "verify_iss": False,  # Better Auth may not set issuer
             }
         )
 
