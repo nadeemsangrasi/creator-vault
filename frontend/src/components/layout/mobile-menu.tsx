@@ -1,11 +1,12 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, SunMoon } from "lucide-react";
 import Link from "next/link";
 import { UserMenu } from "@/components/auth/user-menu";
 import { Sparkles, LayoutDashboard, Lightbulb } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
+import { ThemeToggle } from "../theme-toggle";
 
 export function MobileMenu() {
   const pathname = usePathname();
@@ -53,7 +54,14 @@ export function MobileMenu() {
             })}
           </nav>
 
-          <div className="mt-auto pt-4 border-t">
+          <div className="mt-auto pt-4 border-t space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <SunMoon className="h-4 w-4" />
+                <span className="text-sm font-medium">Theme</span>
+              </div>
+              <ThemeToggle />
+            </div>
             <UserMenu />
           </div>
         </div>

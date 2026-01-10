@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 import { CheckIcon } from "lucide-react";
 import { Command as CommandPrimitive } from "cmdk";
 import { X } from "lucide-react";

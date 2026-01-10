@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { ThemeToggle } from "../theme-toggle";
 
 export function LandingNav() {
   return (
@@ -31,6 +32,7 @@ export function LandingNav() {
       </nav>
 
       <div className="flex items-center gap-4">
+        <ThemeToggle />
         <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
           <Link href="/signin">Sign In</Link>
         </Button>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 import { MobileMenu } from "@/components/layout/mobile-menu";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function ProtectedLayout({
   children,
@@ -57,6 +58,7 @@ export default function ProtectedLayout({
           </div>
 
           <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
             <UserMenu />
           </div>
         </div>
