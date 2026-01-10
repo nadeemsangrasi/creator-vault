@@ -46,7 +46,10 @@ export const ideasApi = {
         }
       }
 
-      return response;
+      return {
+        success: false,
+        error: response.error || "Failed to fetch ideas",
+      };
     } catch (error) {
       return { error: "Failed to get user session", success: false };
     }

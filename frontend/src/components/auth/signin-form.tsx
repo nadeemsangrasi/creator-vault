@@ -26,7 +26,7 @@ export function SignInForm() {
       await signIn.email({
         email,
         password,
-        dontRememberMe: !rememberMe,
+        rememberMe: rememberMe,
         fetchOptions: {
           onSuccess: () => {
              toast.success("Signed in successfully");

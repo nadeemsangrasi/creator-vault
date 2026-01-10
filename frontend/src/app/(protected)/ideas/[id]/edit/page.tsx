@@ -21,7 +21,7 @@ const ideaSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title is too long"),
   notes: z.string().optional(),
   stage: z.enum(["idea", "outline", "draft", "published"]),
-  priority: z.enum(["low", "medium", "high"]).default("medium"),
+  priority: z.enum(["low", "medium", "high"]),
   tags: z.string().optional(), // Comma separated
 });
 

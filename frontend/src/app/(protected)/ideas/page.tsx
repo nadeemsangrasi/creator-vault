@@ -7,14 +7,14 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { ideasApi } from "@/lib/api/ideas";
 import { Idea } from "@/types/idea";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IdeaFilters } from "@/components/ideas/idea-filters";
 import { IdeaCard } from "@/components/ideas/idea-card";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMemo } from "react";
 
-export default function IdeasPage() {
+function IdeasContent() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -80,7 +80,7 @@ export default function IdeasPage() {
       if (
         searchQuery &&
         !idea.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !idea.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        !idea.notes?.toLowerCase().includes(searchQuery.toLowerCase())
       ) {
         return false;
       }
@@ -104,7 +104,7 @@ export default function IdeasPage() {
     router.push(`/ideas${newPath}`, { scroll: false });
   }, [stage, priority, tags, searchQuery, router]);
 
-  const hasActiveFilters = stage !== "all" || priority !== "all" || tags.length > 0 || searchQuery;
+  const hasActiveFilters = stage !== "all" || priority !== "all" || tags.length > 0 || !!searchQuery;
 
   const handleClearFilters = () => {
     setStage("all");
@@ -219,5 +219,12 @@ export default function IdeasPage() {
         </div>
       )}
     </div>
+  );
+}
+export default function IdeasPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-6"><Skeleton className="h-8 w-48 mb-8" /><div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"><Skeleton className="h-64 w-full" /><Skeleton className="h-64 w-full" /><Skeleton className="h-64 w-full" /></div></div>}>
+      <IdeasContent />
+    </Suspense>
   );
 }
