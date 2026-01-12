@@ -1,41 +1,82 @@
 # CreatorVault: Claude Code Rules
 
-You are an expert AI assistant specializing in Spec-Driven Development (SDD). Your primary goal is to build **CreatorVault**, a privacy-first content idea manager.
+You are an expert AI assistant specializing in Spec-Driven Development (SDD). Your primary goal is to build and maintain **CreatorVault**, a privacy-first content idea manager.
 
-## Phase 2 Hackathon: Full-Stack Web Application
+## Project Overview
 
-This project is currently in **Phase 2** of a 5-phase evolution:
+CreatorVault is a full-stack web application for content ideation and management. The project combines modern web technologies to provide a comprehensive content ideation platform with plans for AI integration.
 
-1. Console App (Python) - COMPLETED
-2. **Full-Stack Web App (Next.js/FastAPI) - IN PROGRESS** ⬅ YOU ARE HERE
-3. AI-Powered Chatbot - PLANNED
-4. Local Kubernetes (Minikube) - PLANNED
-5. Cloud Deployment (DOKS/Kafka/Dapr) - PLANNED
+**Core Features:**
 
-### Phase 2 Objectives
-
-Build a production-ready web application with:
-
-- Next.js 16 frontend (App Router, TypeScript, Tailwind CSS, shadcn/ui)
-- FastAPI backend (Python 3.13+, SQLModel, Pydantic v2)
-- Neon Serverless PostgreSQL database
-- Better Auth authentication system with JWT verification
-- Modern 2026-style landing page with anticipatory UX
+- Full-stack web application with Next.js frontend and FastAPI backend
 - Privacy-first architecture with encrypted content storage
-- Full CRUD operations for content ideas
-- Responsive, accessible UI with Framer Motion micro-interactions
+- Complete user authentication and management system
+- Responsive, accessible UI with modern design patterns
+- Plans for AI-powered content suggestions and analysis
 
-## Quick Reference
+**Technology Stack:**
 
-### Development Commands
+- Frontend: Next.js 16, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
+- Backend: Python 3.13+, FastAPI 0.115+, SQLModel, Pydantic v2
+- Database: Neon Serverless PostgreSQL
+- Authentication: Better Auth with JWT verification
+- Deployment: Docker containerization
+
+### AI-Powered Features
+
+**Future AI Integration:** AI-powered features for enhanced content ideation and management will be implemented in upcoming phases.
+
+**Planned AI Technologies:**
+
+- OpenAI API integration
+- Openai agent sdk for LLM orchestration
+- Natural Language Processing for idea categorization
+- AI-powered content suggestions and enhancements
+
+**Chatbot Backend Architecture:**
+
+- **Message Processing Layer**: FastAPI endpoints for handling chat interactions
+- **LLM Integration**: OpenAI Agent SDK
+- **Response Streaming**: Server-Sent Events (SSE) for real-time responses
+- **Tool Integration**: Custom tools for content ideation and management
+- **Rate Limiting**: Per-user and per-endpoint rate limiting
+- **Monitoring**: Structured logging and performance metrics
+
+## Monorepo Structure
+
+```
+creator-vault/
+├── frontend/                 # Next.js 16 application
+│   ├── app/                 # App Router pages
+│   ├── components/          # Reusable UI components
+│   ├── lib/                 # Utilities and API clients
+│   ├── public/              # Static assets
+│   └── package.json         # Frontend dependencies
+├── backend/                  # FastAPI application
+│   ├── app/                 # API routes and models
+│   ├── core/                # Configuration and security
+│   ├── models/              # SQLModel database models
+│   ├── schemas/             # Pydantic schemas
+│   ├── services/            # Business logic
+│   └── requirements.txt     # Backend dependencies
+├── shared/                   # Shared types and utilities
+├── docker-compose.yml       # Multi-service orchestration
+├── CLAUDE.md               # Root monorepo configuration
+├── frontend/CLAUDE.md      # Frontend-specific configuration
+└── backend/CLAUDE.md       # Backend-specific configuration
+```
+
+## Development Commands
 
 - **Frontend (Next.js):** `cd frontend && npm run dev`
 - **Backend (FastAPI):** `cd backend && uv run uvicorn main:app --reload`
-- **Build:** `npm run build` (frontend)
+- **Full Stack:** `docker-compose up --build`
+- **Build:** `npm run build` (frontend) / `cd backend && uv build .`
 - **Lint:** `npm run lint` (frontend) / `uv run ruff check .` (backend)
 - **Test:** `npm test` (frontend) / `uv run pytest` (backend)
+- **Database Migrations:** `cd backend && alembic upgrade head`
 
-### Project Skills
+## Project Skills
 
 - `/landing-page-design-2026` - Design modern 2026-style landing pages
 - `/scaffolding-fastapi` - Initialize FastAPI backend structure
@@ -51,10 +92,15 @@ Build a production-ready web application with:
 - `/skill-creator` - Build new reusable Claude Code skills
 - `/specify` - Create SpecKit Plus feature specifications
 - `/systematic-debugging` - Diagnose and fix software issues
+- `/openai-agent-sdk` - Scaffold OpenAI Agent SDK Python applications
+- `/streaming-llm-responses` - Implement real-time LLM streaming responses
+- `/tool-design` - Design tools that agents can use effectively
+- `/memory-systems` - Design and implement memory architectures for agent systems
+- `/mcp-server-builder` - Build MCP (Model Context Protocol) servers for external AI services
 - `/sp.adr` - Document architectural decisions
 - `/sp.phr` - Generate Prompt History Records
 
-## Task context
+## Task Context
 
 **Your Surface:** You operate on a project level, providing guidance to users and executing development tasks via a defined set of tools.
 
@@ -297,8 +343,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
 
 ## Active Technologies
+
 - Python 3.13+ (managed by `uv` package manager) + FastAPI 0.115+, SQLModel 0.0.22+, Pydantic v2, Alembic, psycopg3[binary] (async), PyJWT, python-jose[cryptography], structlog (001-backend-api)
 - Neon Serverless PostgreSQL with connection pooling via PgBouncer (001-backend-api)
 
 ## Recent Changes
+
 - 001-backend-api: Added Python 3.13+ (managed by `uv` package manager) + FastAPI 0.115+, SQLModel 0.0.22+, Pydantic v2, Alembic, psycopg3[binary] (async), PyJWT, python-jose[cryptography], structlog
